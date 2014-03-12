@@ -1,0 +1,31 @@
+require 'spec_helper'
+
+#
+#  Apache listens on 8080
+#
+describe package('apache2') do
+  it { should be_installed }
+end
+
+describe service('apache2') do
+  it { should be_enabled   }
+  it { should be_running   }
+end
+describe port(8080) do
+  it { should be_listening }
+end
+
+describe file('/etc/apache2/sites-enabled/yawns') do
+  it { should be_file }
+  its(:content) { should match /ServerName www.debian-administration.org/ }
+end
+
+#
+#  We should have an IP in the right vlan.
+#
+describe interface('eth0') do
+  it { should have_ipv4_address("212.110.179.75") }
+end
+describe default_gateway do
+  its(:ipaddress) { should eq '212.110.179.65' }
+end
