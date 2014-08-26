@@ -46,3 +46,24 @@ end
 describe port(2222) do
   it { should be_listening }
 end
+
+
+
+#
+#  HaProxy should run on :80
+#
+describe service('haproxy') do
+  it { should be_enabled   }
+  it { should be_running   }
+end
+describe file('/etc/haproxy/haproxy.cfg') do
+  it { should be_file }
+  its(:content) { should match /:80/ }
+  its(:content) { should match /:443/ }
+end
+describe port(80) do
+  it { should be_listening }
+end
+describe port(443) do
+  it { should be_listening }
+end
