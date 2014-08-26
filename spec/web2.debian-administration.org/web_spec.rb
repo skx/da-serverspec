@@ -1,19 +1,34 @@
 require 'spec_helper'
 
+
 #
-#  Apache listens on 8080
+#  Apache listens on :8080, with haproxy on :443 + :80
 #
-describe package('apache2') do
-  it { should be_installed }
+#  So both services should be installed, enabled, and running.
+#
+%w( apache2 haproxy ).each do |pkg|
+
+  describe package(pkg) do
+    it { should be_installed }
+  end
+
+  describe service(pkg) do
+    it { should be_enabled   }
+    it { should be_running   }
+  end
+
 end
 
-describe service('apache2') do
-  it { should be_enabled   }
-  it { should be_running   }
+
+#
+# The end-result should be three listening ports: 80, 443, 8080.
+#
+%w( 80 443 8080 ).each do |prt|
+  describe port(prt) do
+    it { should be_listening }
+  end
 end
-describe port(8080) do
-  it { should be_listening }
-end
+
 
 describe file('/etc/apache2/sites-enabled/yawns') do
   it { should be_file }
